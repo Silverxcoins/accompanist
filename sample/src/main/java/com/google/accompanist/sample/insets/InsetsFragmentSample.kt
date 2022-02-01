@@ -24,7 +24,6 @@ import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
@@ -32,8 +31,6 @@ import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.ViewWindowInsetObserver
 import com.google.accompanist.sample.AccompanistSampleTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -63,12 +60,6 @@ class InsetsFragment : Fragment() {
     ): View = ComposeView(requireContext()).apply {
         layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
 
-        // Create an ViewWindowInsetObserver using this view
-        val observer = ViewWindowInsetObserver(this)
-        // Call start() to start listening now.
-        // The WindowInsets instance is returned to us.
-        val windowInsets = observer.start()
-
         setContent {
             // Update the system bars to be translucent
             val systemUiController = rememberSystemUiController()
@@ -78,11 +69,7 @@ class InsetsFragment : Fragment() {
             }
 
             AccompanistSampleTheme {
-                // Instead of calling ProvideWindowInsets, we use CompositionLocalProvider to provide
-                // the WindowInsets instance from above to LocalWindowInsets
-                CompositionLocalProvider(LocalWindowInsets provides windowInsets) {
-                    InsetsBasics()
-                }
+                InsetsBasics()
             }
         }
     }

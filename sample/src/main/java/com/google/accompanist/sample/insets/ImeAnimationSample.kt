@@ -20,9 +20,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
@@ -36,18 +42,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ExperimentalAnimatedInsets
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.rememberImeNestedScrollConnection
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
-import com.google.accompanist.insets.ui.TopAppBar
+import com.google.accompanist.insets.ui.TopAppBarContent
+import com.google.accompanist.insets.ui.TopAppBarSurface
 import com.google.accompanist.sample.AccompanistSampleTheme
 import com.google.accompanist.sample.R
 import com.google.accompanist.sample.randomSampleImageUrl
@@ -71,9 +76,7 @@ class ImeAnimationSample : ComponentActivity() {
             }
 
             AccompanistSampleTheme {
-                ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
-                    Sample()
-                }
+                Sample()
             }
         }
     }
@@ -84,19 +87,37 @@ private val listItems = List(40) { randomSampleImageUrl(it) }
 @OptIn(ExperimentalAnimatedInsets::class)
 @Composable
 private fun Sample() {
+    val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
+
+    val horizontalContentPadding = WindowInsets.systemBars.let {
+        WindowInsets(
+            left = it.getLeft(density, layoutDirection),
+            right = it.getRight(density, layoutDirection)
+        )
+    }.asPaddingValues()
+
     Scaffold(
         topBar = {
             // We use TopAppBar from accompanist-insets-ui which allows us to provide
             // content padding matching the system bars insets.
-            TopAppBar(
-                title = { Text(stringResource(R.string.insets_title_imeanim)) },
+            TopAppBarSurface(
                 backgroundColor = MaterialTheme.colors.surface,
-                contentPadding = rememberInsetsPaddingValues(
-                    LocalWindowInsets.current.statusBars,
-                    applyBottom = false,
-                ),
-                modifier = Modifier.fillMaxWidth(),
-            )
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                TopAppBarContent(
+                    title = { Text(stringResource(R.string.insets_title_imeanim)) },
+                    modifier = Modifier.windowInsetsPadding(
+                        WindowInsets.systemBars.let {
+                            WindowInsets(
+                                left = it.getLeft(density, layoutDirection),
+                                top = it.getTop(density),
+                                right = it.getRight(density, layoutDirection)
+                            )
+                        }
+                    )
+                )
+            }
         },
         bottomBar = {
             Surface(elevation = 1.dp) {
@@ -107,12 +128,14 @@ private fun Sample() {
                     placeholder = { Text(text = "Watch me animate...") },
                     modifier = Modifier
                         .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .imePadding()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .navigationBarsWithImePadding()
                 )
             }
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = horizontalContentPadding
     ) { contentPadding ->
         Column {
             // We apply the contentPadding passed to us from the Scaffold

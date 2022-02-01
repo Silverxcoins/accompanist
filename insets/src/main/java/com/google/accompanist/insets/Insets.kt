@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("DEPRECATION")
 
 package com.google.accompanist.insets
 
@@ -28,6 +29,7 @@ import androidx.compose.runtime.setValue
  * offsets which describe changes to the four edges of a rectangle.
  */
 @Stable
+@Deprecated("accompanist/insets is deprecated")
 interface Insets {
     /**
      * The left dimension of these insets in pixels.
@@ -146,6 +148,7 @@ internal fun MutableInsets.updateFrom(insets: androidx.core.graphics.Insets) {
  * dimension value in [minimumValue], otherwise a copy of this with each dimension coerced with the
  * corresponding dimension value in [minimumValue].
  */
+@Deprecated("accompanist/insets is deprecated")
 fun Insets.coerceEachDimensionAtLeast(minimumValue: Insets): Insets {
     return takeIf {
         // Fast path, no need to copy if: this >= minimumValue

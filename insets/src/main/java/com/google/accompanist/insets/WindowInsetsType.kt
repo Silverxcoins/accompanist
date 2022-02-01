@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("DEPRECATION")
 
 package com.google.accompanist.insets
 
@@ -105,6 +106,7 @@ internal class ImmutableWindowInsetsType(
  * is the derived insets of the [WindowInsets.ime] insets, coerced by the
  * [WindowInsets.navigationBars] insets.
  */
+@Deprecated("accompanist/insets is deprecated")
 fun derivedWindowInsetsTypeOf(vararg types: WindowInsets.Type): WindowInsets.Type = CalculatedWindowInsetsType(*types)
 
 /**
